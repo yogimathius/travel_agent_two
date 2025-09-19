@@ -148,7 +148,7 @@ class TestTravelAgent:
         response = await self.agent.chat(request)
         
         assert "found 1 flights" in response.response
-        assert "LAX → JFK" in response.response
+        assert "**LAX** → **JFK**" in response.response
         assert "$299.99" in response.response
         assert response.state == ConversationState.SHOWING_RESULTS
     
@@ -185,8 +185,8 @@ class TestTravelAgent:
         
         assert "Option 1" in formatted
         assert "$299.99" in formatted
-        assert "Direct" in formatted
-        assert "LAX → JFK" in formatted
+        assert "🎯 Direct Flight" in formatted
+        assert "**LAX** → **JFK**" in formatted
         assert "Test Airlines TA123" in formatted
     
     def test_format_baggage(self):
@@ -198,5 +198,5 @@ class TestTravelAgent:
         ]
         
         formatted = self.agent._format_baggage(baggage_info)
-        assert "Carry-on included" in formatted
-        assert "1st bag: $35.0" in formatted
+        assert "Carry-on **included**" in formatted
+        assert "1st bag: **$35.0**" in formatted
