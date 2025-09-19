@@ -96,38 +96,74 @@ class TravelAgent:
             return None
     
     def _format_flight_for_display(self, flight: Flight, index: int) -> str:
-        """Format a flight for user display."""
+        """Format a flight for user display with enhanced visual hierarchy."""
         segments_info = []
         for segment in flight.segments:
             dep_time = segment.departure_time.strftime("%I:%M %p")
             arr_time = segment.arrival_time.strftime("%I:%M %p")
             segments_info.append(
-                f"{segment.departure_airport.code} → {segment.arrival_airport.code} "
-                f"({dep_time} - {arr_time}, {segment.airline} {segment.flight_number})"
+                f"🛫 **{segment.departure_airport.code}** → **{segment.arrival_airport.code}** "
+                f"({dep_time} - {arr_time})"
             )
+            segments_info.append(f"   ✈️ {segment.airline} {segment.flight_number}")
         
-        stops_text = "Direct" if flight.is_direct else f"{flight.stops} stop(s)"
+        stops_text = "🎯 Direct Flight" if flight.is_direct else f"🔄 {flight.stops} Stop(s)"
         baggage_text = self._format_baggage(flight.baggage_info)
+        refund_status = "✅ **Refundable**" if flight.is_refundable else "❌ Non-refundable"
         
-        return f"""**Option {index + 1}**: ${flight.price:.2f} - {stops_text}
+        # Enhanced formatting with icons and better structure
+        return f"""
+---
+**💺 Option {index + 1}** - **${flight.price:.2f}** | {stops_text}
+
 {chr(10).join(segments_info)}
-Duration: {flight.total_duration}
-Cabin: {flight.cabin_class.value.replace('_', ' ').title()}
-Baggage: {baggage_text}
-{"✅ Refundable" if flight.is_refundable else "❌ Non-refundable"}"""
+
+⏱️ **Duration:** {flight.total_duration}  
+🎫 **Cabin:** {flight.cabin_class.value.replace('_', ' ').title()}  
+🧳 **Baggage:** {baggage_text}  
+🔄 **Refund:** {refund_status}
+---"""
     
     def _format_baggage(self, baggage_info: List) -> str:
-        """Format baggage information for display."""
+        """Format baggage information for display with icons."""
         carry_on = next((b for b in baggage_info if b.type.value == "carry_on"), None)
         checked = next((b for b in baggage_info if b.type.value == "checked"), None)
         
         parts = []
         if carry_on:
-            parts.append("Carry-on included" if carry_on.included else f"Carry-on: ${carry_on.fee}")
+            if carry_on.included:
+                parts.append("👜 Carry-on **included**")
+            else:
+                parts.append(f"👜 Carry-on: **${carry_on.fee}**")
         if checked:
-            parts.append("1st bag included" if checked.included else f"1st bag: ${checked.fee}")
+            if checked.included:
+                parts.append("🧳 1st bag **included**")
+            else:
+                parts.append(f"🧳 1st bag: **${checked.fee}**")
         
-        return ", ".join(parts)
+        return " | ".join(parts)
+    
+    def _create_comparison_table(self, flights: List[Flight]) -> str:
+        """Create a quick comparison table for flights."""
+        if len(flights) < 2:
+            return ""
+        
+        table_parts = [
+            "📊 **Quick Comparison**",
+            "",
+            "| Option | Price | Duration | Type | Refundable |",
+            "|--------|-------|----------|------|------------|"
+        ]
+        
+        for i, flight in enumerate(flights):
+            price = f"${flight.price:.2f}"
+            duration = flight.total_duration
+            flight_type = "Direct" if flight.is_direct else f"{flight.stops} stop(s)"
+            refundable = "✅" if flight.is_refundable else "❌"
+            
+            table_parts.append(f"| Option {i+1} | **{price}** | {duration} | {flight_type} | {refundable} |")
+        
+        return "\n".join(table_parts)
     
     async def _handle_flight_search(self, session: ConversationSession, intent_data: Dict[str, Any]) -> str:
         """Handle flight search request."""
@@ -166,6 +202,11 @@ Baggage: {baggage_text}
             for i, flight in enumerate(search_response.flights[:5]):
                 response_parts.append(self._format_flight_for_display(flight, i))
                 response_parts.append("")  # Empty line
+            
+            # Add comparison table if 3 or more flights
+            if len(search_response.flights) >= 3:
+                response_parts.append(self._create_comparison_table(search_response.flights[:5]))
+                response_parts.append("")
             
             if len(search_response.flights) > 5:
                 response_parts.append(f"... and {len(search_response.flights) - 5} more options.")
@@ -290,10 +331,11 @@ Now let me prepare your booking summary..."""
         session.state = ConversationState.COMPLETED
         session.updated_at = datetime.now()
         
-        return f"""🎉 **Booking Confirmation** 
+        return f"""
+🎉 **BOOKING CONFIRMED** 🎉
 
-**Booking Reference:** {booking_ref}
-**Total Price:** ${booking.total_price:.2f}
+📋 **Booking Reference:** `{booking_ref}`  
+💰 **Total Price:** **${booking.total_price:.2f}**
 
 **Flight Details:**
 {flight_summary}
