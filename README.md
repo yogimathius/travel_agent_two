@@ -32,3 +32,23 @@ An AI-powered travel agent that helps users search and book domestic flights usi
 ## Usage
 
 Visit `http://localhost:8000/docs` for the API documentation and interactive testing interface.
+
+## Current Status
+
+- FastAPI-based travel agent with documented features.
+- Implementation not verified in this audit.
+- Operational estimate: **45%** (documented MVP, unverified runtime).
+
+## API Endpoints
+
+- Not enumerated here. FastAPI docs at `/docs`.
+
+## Tests
+
+- Pytest is listed, but not run in this audit.
+
+## Future Work
+
+- Validate Amadeus integration and booking simulation.
+- Add automated tests and error handling coverage.
+- Document conversation flows and schema.
