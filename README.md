@@ -2,53 +2,32 @@
 
 An AI-powered travel agent that helps users search and book domestic flights using natural language conversation.
 
-## Features
+## Scope and Direction
+- Project path: `ai-ml-research/travel_agent_two`
+- Primary tech profile: Python
+- Audit date: `2026-02-08`
 
-- Real-time flight search and pricing
-- Natural language conversation interface
-- Flight details including layovers, baggage policies
-- Passenger information collection
-- Booking simulation (no actual purchases)
-
-## Tech Stack
-
-- **Backend**: Python + FastAPI
-- **AI**: GitHub Models (GPT-4o-mini)
-- **Flight Data**: Amadeus API
-- **Testing**: pytest
-
-## Setup
-
-1. Clone the repository
-2. Copy `.env.example` to `.env` and fill in API keys
-3. Install dependencies: `poetry install`
-4. Run the server: `poetry run uvicorn src.travel_agent.main:app --reload`
-
-## API Keys Required
-
-- GitHub Personal Access Token (for GitHub Models)
-- Amadeus API credentials (free tier available)
-
-## Usage
-
-Visit `http://localhost:8000/docs` for the API documentation and interactive testing interface.
-
-## Current Status
-
-- FastAPI-based travel agent with documented features.
-- Implementation not verified in this audit.
-- Operational estimate: **45%** (documented MVP, unverified runtime).
+## What Appears Implemented
+- Detected major components: `src/`
+- Source files contain API/controller routing signals
 
 ## API Endpoints
+- Direct route strings detected:
+- `/`
+- `/health`
+- `/chat`
+- `/sessions/{session_id}`
+- `/docs-info`
 
-- Not enumerated here. FastAPI docs at `/docs`.
+## Testing Status
+- `pytest` likely applies for Python components
+- This audit did not assume tests are passing unless explicitly re-run and captured in this session
 
-## Tests
-
-- Pytest is listed, but not run in this audit.
+## Operational Assessment
+- Estimated operational coverage: **52%**
+- Confidence level: **medium**
 
 ## Future Work
-
-- Validate Amadeus integration and booking simulation.
-- Add automated tests and error handling coverage.
-- Document conversation flows and schema.
+- Consolidate and document endpoint contracts with examples and expected payloads
+- Run the detected tests in CI and track flakiness, duration, and coverage
+- Validate runtime claims in this README against current behavior and deployment configuration
